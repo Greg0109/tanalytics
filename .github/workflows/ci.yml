@@ -28,7 +28,7 @@ jobs:
         uses: extractions/setup-just@v2
       
       - name: Install dependencies
-        run: just install
+        run: just venv
       
       - name: Run linting
         run: just lint
