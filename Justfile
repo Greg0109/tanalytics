@@ -18,7 +18,7 @@ run:
 
 lint:
     @echo "Linting code with ruff..."
-    ruff check .
+    uv run ruff check .
 
 format:
     @echo "Formatting code with ruff..."
@@ -26,7 +26,7 @@ format:
 
 typecheck:
     @echo "Type checking with mypy..."
-    mypy src
+    uv run mypy src
 
 check: lint typecheck
 
