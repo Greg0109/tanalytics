@@ -9,6 +9,7 @@ class UserProfile(BaseModel):
     id: str = Field(..., description="User ID")
     login: str = Field(..., description="Login name")
     display_name: str = Field(..., description="Display name")
+    type: str = Field(..., description="User type: 'staff', 'admin', 'global_mod', or ''")
     description: str = Field(..., description="Channel description")
     broadcaster_type: str = Field(..., description="Broadcaster type: 'partner', 'affiliate', or ''")
     profile_image_url: str = Field(..., description="Profile image URL")
