@@ -8,6 +8,11 @@ from src.config import settings
 from . import logger
 
 
+class TwitchAuthenticationError(Exception):
+    """Raised when authentication with Twitch API fails."""
+    pass
+
+
 class TwitchClient:
     """
     Twitch API client.
@@ -61,7 +66,7 @@ class TwitchClient:
             logger.error(f"Twitch: Unexpected error while obtaining access token: {e}")
             raise
         if not self._access_token:
-            raise Exception("Twitch: Access token is not available after refresh attempt.")
+            raise TwitchAuthenticationError("Twitch: Access token is not available after refresh attempt.")
         return self._access_token
 
     async def _request(
