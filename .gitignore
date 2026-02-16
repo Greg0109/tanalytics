@@ -1,0 +1,26 @@
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+
+# Environments
+.env
+.env.*
+!.env.example
+.venv/
+venv/
+env/
+
+# Type checking & linting
+.mypy_cache/
+.ruff_cache/
+
+# Editors
+.vscode/
+
+# Package managers
+.uv_cache/
+
+# Python version
+.python-version
