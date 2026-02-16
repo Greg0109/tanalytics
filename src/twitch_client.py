@@ -17,7 +17,7 @@ class TwitchClient:
     TWITCH_TOKEN_URL = "https://id.twitch.tv/oauth2/token"
     TWITCH_HELIX_URL = "https://api.twitch.tv/helix"
 
-    def __init__(self):
+    def __init__(self) -> None:
         self._access_token: Optional[str] = None
         self._token_expiry: Optional[datetime] = None
         self._http_client = httpx.AsyncClient()
@@ -48,11 +48,20 @@ class TwitchClient:
         """
         Returns a valid access token, refreshing it if expired.
         """
-        if not self._access_token or (
-            self._token_expiry and datetime.now() >= self._token_expiry
-        ):
-            logger.info("Twitch: Access token expired or not available, refreshing...")
-            await self._get_access_token()
+        try:
+            if not self._access_token or (
+                self._token_expiry and datetime.now() >= self._token_expiry
+            ):
+                logger.info("Twitch: Access token expired or not available, refreshing...")
+                await self._get_access_token()
+        except httpx.HTTPError as e:
+            logger.error(f"Twitch: Failed to obtain access token: {e}")
+            raise
+        except Exception as e:
+            logger.error(f"Twitch: Unexpected error while obtaining access token: {e}")
+            raise
+        if not self._access_token:
+            raise Exception("Twitch: Access token is not available after refresh attempt.")
         return self._access_token
 
     async def _request(
@@ -161,7 +170,7 @@ class TwitchClient:
         response = await self._request("GET", "/streams", params=params)
         return response.json()
 
-    async def close(self):
+    async def close(self) -> None:
         """
         Closes the HTTP client.
         """
