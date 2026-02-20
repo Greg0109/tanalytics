@@ -10,6 +10,7 @@ from . import logger
 
 class TwitchAuthenticationError(Exception):
     """Raised when authentication with Twitch API fails."""
+
     pass
 
 
@@ -46,7 +47,9 @@ class TwitchClient:
         self._token_expiry = datetime.now() + timedelta(
             seconds=data["expires_in"] - 300
         )
-        logger.info(f"Twitch: New access token obtained, expires at {self._token_expiry}")
+        logger.info(
+            f"Twitch: New access token obtained, expires at {self._token_expiry}"
+        )
         return self._access_token
 
     async def _get_valid_access_token(self) -> str:
@@ -57,7 +60,9 @@ class TwitchClient:
             if not self._access_token or (
                 self._token_expiry and datetime.now() >= self._token_expiry
             ):
-                logger.info("Twitch: Access token expired or not available, refreshing...")
+                logger.info(
+                    "Twitch: Access token expired or not available, refreshing..."
+                )
                 await self._get_access_token()
         except httpx.HTTPError as e:
             logger.error(f"Twitch: Failed to obtain access token: {e}")
@@ -66,7 +71,9 @@ class TwitchClient:
             logger.error(f"Twitch: Unexpected error while obtaining access token: {e}")
             raise
         if not self._access_token:
-            raise TwitchAuthenticationError("Twitch: Access token is not available after refresh attempt.")
+            raise TwitchAuthenticationError(
+                "Twitch: Access token is not available after refresh attempt."
+            )
         return self._access_token
 
     async def _request(
@@ -92,7 +99,9 @@ class TwitchClient:
 
         if self._rate_limit_reset and datetime.now() < self._rate_limit_reset:
             wait_time = (self._rate_limit_reset - datetime.now()).total_seconds() + 1
-            logger.warning(f"Twitch: Rate limit hit, waiting for {wait_time:.2f} seconds.")
+            logger.warning(
+                f"Twitch: Rate limit hit, waiting for {wait_time:.2f} seconds."
+            )
             await asyncio.sleep(wait_time)
 
         try:
@@ -126,9 +135,7 @@ class TwitchClient:
                     reset_timestamp = int(e.response.headers["Ratelimit-Reset"])
                     self._rate_limit_reset = datetime.fromtimestamp(reset_timestamp)
                 else:
-                    self._rate_limit_reset = datetime.now() + timedelta(
-                        seconds=60
-                    )
+                    self._rate_limit_reset = datetime.now() + timedelta(seconds=60)
 
                 if retry_count < 2:
                     await asyncio.sleep(1)
