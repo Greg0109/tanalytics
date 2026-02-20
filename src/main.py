@@ -59,18 +59,7 @@ async def get_twitch_user(
 
         user_data = twitch_data["data"][0]
 
-        user_profile = UserProfile(
-            id=user_data["id"],
-            login=user_data["login"],
-            display_name=user_data["display_name"],
-            type=user_data["type"],
-            broadcaster_type=user_data["broadcaster_type"],
-            description=user_data["description"],
-            profile_image_url=user_data["profile_image_url"],
-            offline_image_url=user_data["offline_image_url"],
-            view_count=user_data["view_count"],
-            created_at=user_data["created_at"],
-        )
+        user_profile = UserProfile(**user_data)
         return UserResponse(user=user_profile)
     except httpx.HTTPStatusError as e:
         if e.response.status_code == 400:
@@ -122,23 +111,7 @@ async def get_twitch_streams(
             user_logins=[user_login] if user_login else None,
         )
 
-        streams = []
-        for stream_data in twitch_data.get("data", []):
-            streams.append(
-                Stream(
-                    id=stream_data["id"],
-                    user_id=stream_data["user_id"],
-                    user_login=stream_data["user_login"],
-                    user_name=stream_data["user_name"],
-                    title=stream_data["title"],
-                    viewer_count=stream_data["viewer_count"],
-                    started_at=stream_data["started_at"],
-                    language=stream_data["language"],
-                    thumbnail_url=stream_data["thumbnail_url"],
-                    game_id=stream_data.get("game_id"),
-                    game_name=stream_data.get("game_name"),
-                )
-            )
+        streams = [Stream(**stream_data) for stream_data in twitch_data.get("data", [])]
         return StreamsResponse(streams=streams)
     except httpx.HTTPStatusError as e:
         logger.error(f"HTTP error in get_twitch_streams: {e}")
